@@ -6,27 +6,27 @@ const userSchema = new mongoose.Schema({
     fullname: {
 
         firstname: {
-            type: string,
+            type: String,
             minlength: [3, 'your name must be 3 charecter long'],
             required: true
         },
         lastname: {
-            type: string,
+            type: String,
             required: true
         }
     },
     email: {
-        type: string,
+        type: String,
         required: true,
         minlength: [5, 'your email should be at least 5 charecter long']
     },
     password: {
-        type: string,
+        type: String,
         required: true,
         select : false
     },
     socketId: {
-        type: string,
+        type: String,
     }
 });
 
