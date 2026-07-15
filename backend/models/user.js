@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     fullname: {
-
         firstname: {
             type: String,
             minlength: [3, 'your name must be 3 charecter long'],
@@ -32,15 +31,22 @@ const userSchema = new mongoose.Schema({
 
 
 userSchema.methods.generateAuthToken = function(){
-    const Token = jwt.sign({_id: this._id}, process.env.JWT_SECRET)
-    return Token;
+    const token = jwt.sign(
+        { _id: this._id }, 
+        process.env.JWT_SECRET, 
+        { 
+            expiresIn: '1h',       
+            algorithm: 'HS256'  
+        }
+    );
+    return token;
 }
 
 userSchema.methods.comparePassword = async function(password){
     return brypt.compare(password, this.password)
 }
 
-userSchema.static.hashPassword = async function(password){
+userSchema.statics.hashPassword = async function(password){
     return bcrypt.hash(password,10)
 }
 
