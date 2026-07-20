@@ -43,11 +43,11 @@ userSchema.methods.generateAuthToken = function(){
 }
 
 userSchema.methods.comparePassword = async function(password){
-    return brypt.compare(password, this.password)
+    return await bcrypt.compare(password, this.password);
 }
 
 userSchema.statics.hashPassword = async function(password){
-    return bcrypt.hash(password,10)
+    return bcrypt.hash(password,10);
 }
 
 

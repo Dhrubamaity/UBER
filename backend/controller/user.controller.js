@@ -12,11 +12,33 @@ module.exports.registerUser = async (req, res, next) => {
     const hashedPassword = await userModel.hashPassword(password);
     const user = await userService.createUser({
         firstname: fullname.firstname,
-        lastname: fullname.lastname,   
+        lastname: fullname.lastname,
         email,
         password: hashedPassword
     });
 
     const Token = user.generateAuthToken();
-     res.send(201).json({Token, user});
+    res.send(201).json({ Token, user });
+}
+
+
+module.exports.loginUser = async (req, res, next) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return(res.ststus(400).json({errors:errors.array()}))
+    }
+
+    const {email,password}= req.body;
+    const user = await userModel.findOne({email}).select("+password");
+    if(!user){
+        return(res.status(401).json({message:"Inavalid email or password"}));
+    }
+
+    const isPasswordMatch = await user.comparePassword(password);
+    if(!isPasswordMatch){
+        return(res.status(401).json({message:"Inavalid email or password"}));
+    }
+
+    const token = user.generateAuthToken();
+    res.status(200).json({token, user})
 }
