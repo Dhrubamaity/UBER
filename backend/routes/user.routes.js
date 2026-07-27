@@ -1,8 +1,9 @@
 const express = require("express");
-const { registerUser, loginUser } = require("../controller/user.controller");
+const { registerUser, loginUser, getUserProfile, logoutUser } = require("../controller/user.controller");
 const {body} = require("express-validator");
 const userModel = require("../models/user");
 const router = express.Router();
+const authMiddleware = require("../middleware/authMiddleware")
 
 
 router.post("/register",[
@@ -12,6 +13,7 @@ router.post("/register",[
 ],
 registerUser
 )
+
 router.post("/login",[
     body('email').isEmail().withMessage('invalid email'),
     body('fullname.firstname').isLength({min:3}).withMessage('First name must be three charecter long'),
@@ -19,5 +21,8 @@ router.post("/login",[
 ],
 loginUser
 )
+
+router.get("/profile", authMiddleware.authUser , getUserProfile)
+router.post("/logout", authMiddleware.authUser , logoutUser)
 
 module.exports = router ;

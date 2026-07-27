@@ -60,6 +60,123 @@ POST /users/register
 
 ---
 
+## Endpoint: POST /users/login
+
+This endpoint authenticates an existing user and returns a JWT token.
+
+### Purpose
+Validate the user's credentials and sign them in.
+
+### Request URL
+```http
+POST /users/login
+```
+
+### Request Body
+```json
+{
+  "email": "john@example.com",
+  "password": "123456"
+}
+```
+
+### Validation Rules
+- `email` must be a valid email address
+- `password` must be at least 6 characters long
+
+### Success Response
+```json
+{
+  "token": "<jwt_token>",
+  "user": {
+    "_id": "<user_id>",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john@example.com"
+  }
+}
+```
+
+### Error Response
+```json
+{
+  "message": "Inavalid email or password"
+}
+```
+
+---
+
+## Endpoint: GET /users/profile
+
+This endpoint returns the authenticated user's profile.
+
+### Purpose
+Fetch the current user's profile data using the JWT token.
+
+### Request URL
+```http
+GET /users/profile
+```
+
+### Authentication
+- Requires a valid JWT token in the `Authorization` header as `Bearer <token>`
+- Or a cookie named `token`
+
+### Success Response
+```json
+{
+  "_id": "<user_id>",
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john@example.com"
+}
+```
+
+### Error Response
+```json
+{
+  "message": "user not authorized by token"
+}
+```
+
+---
+
+## Endpoint: POST /users/logout
+
+This endpoint logs out the authenticated user and blacklists the token.
+
+### Purpose
+Invalidate the current session token and clear the auth cookie.
+
+### Request URL
+```http
+POST /users/logout
+```
+
+### Authentication
+- Requires a valid JWT token in the `Authorization` header as `Bearer <token>`
+- Or a cookie named `token`
+
+### Success Response
+```json
+{
+  "messag": "User Logedout"
+}
+```
+
+### Error Response
+```json
+{
+  "message": "user not authorized by token"
+}
+```
+
+---
+
 ## Building Blocks
 
 ### 1. Route Layer
