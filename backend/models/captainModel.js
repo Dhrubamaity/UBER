@@ -31,9 +31,9 @@ const captainSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ["active", "inactive"],
-        default: inactive
+        default: "inactive"
     },
-    vehical: {
+    vehicle: {
         color: {
             type: String,
             required: true,
@@ -46,10 +46,10 @@ const captainSchema = new mongoose.Schema({
         },
         capacity: {
             type: Number,
-            rquired: true,
+            required: true,
             minlength: [1, "capacity must be at least one"]
         },
-        vahicaleType: {
+        vehicleType: {
             type: String,
             enum: ["bike", "auto", "car"],
             required: true
@@ -65,18 +65,25 @@ const captainSchema = new mongoose.Schema({
     }
 });
 
-captainSchema.methods.generateAuthToken = function(){
-    const token = jwt.sign({_id = this._id},process.env.JWT_SECRET, {expairsIn:"24h"});
+captainSchema.methods.generateAuthToken = function () {
+    const token = jwt.sign(
+        { _id: this._id },
+        process.env.JWT_SECRET,
+        {
+            expiresIn: '24h',
+            algorithm: 'HS256'
+        }
+    );
     return token;
 }
 
-captainSchema.methods.comparePassword = async function(password){
-    return await bcrypt.compare(password,this.password);
+captainSchema.methods.comparePassword = async function (password) {
+    return await bcrypt.compare(password, this.password);
 }
 
-captainSchema.statics.hashPassword = async function(password){
-    return await bcrypt.hash(password,10);
+captainSchema.statics.hashPassword = async function (password) {
+    return await bcrypt.hash(password, 10);
 }
 
-const captainModel = mongoose.model("captain",captainSchema);
+const captainModel = mongoose.model("captain", captainSchema);
 module.exports = captainModel;
