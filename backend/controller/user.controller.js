@@ -10,7 +10,7 @@ module.exports.registerUser = async (req, res, next) => {
     };
     const { fullname, email, password } = req.body;
 
-    const isUserAlreadyExist = await userModel.findOne(email);
+    const isUserAlreadyExist = await userModel.findOne({email});
     if(isUserAlreadyExist){
         return res.status(401).json({message:"User already exist"})
     }
@@ -57,7 +57,6 @@ module.exports.getUserProfile = async(req,res,next)=>{
 
 module.exports.logoutUser = async(req,res,nest)=>{
     const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-    // console.log(token);
     res.clearCookie("token")
     await blacklistToken.create({token});
 

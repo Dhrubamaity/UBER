@@ -23,6 +23,6 @@ loginUser
 )
 
 router.get("/profile", authMiddleware.authUser , getUserProfile)
-router.post("/logout", authMiddleware.authUser , logoutUser)
+router.get("/logout", authMiddleware.authUser , logoutUser)
 
 module.exports = router ;

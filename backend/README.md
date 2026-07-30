@@ -177,6 +177,192 @@ POST /users/logout
 
 ---
 
+## Captain Routes
+
+These routes are mounted under `/captains` in the backend app.
+
+### 1. POST /captains/register
+
+Register a new captain account.
+
+#### Request Body
+```json
+{
+  "fullname": {
+    "firstname": "Rahul",
+    "lastname": "Sharma"
+  },
+  "email": "rahul@example.com",
+  "password": "123456",
+  "vehicle": {
+    "vehicleType": "car",
+    "color": "Black",
+    "plate": "DL01AB1234",
+    "capacity": "4"
+  }
+}
+```
+
+#### Validation Rules
+- `email` must be a valid email
+- `password` must be at least 6 characters
+- `fullname.firstname` must be at least 3 characters
+- `vehicle.vehicleType` must be one of: `car`, `bike`, `auto`
+- `vehicle.color`, `vehicle.plate` must be at least 3 characters
+- `vehicle.capacity` must not be empty
+
+#### Success Response
+```json
+{
+  "token": "<jwt_token>",
+  "captain": {
+    "_id": "<captain_id>",
+    "fullname": {
+      "firstname": "Rahul",
+      "lastname": "Sharma"
+    },
+    "email": "rahul@example.com",
+    "vehicle": {
+      "vehicleType": "car",
+      "color": "Black",
+      "plate": "DL01AB1234",
+      "capacity": "4"
+    }
+  }
+}
+```
+
+#### Error Response
+```json
+{
+  "message": "Email alreday exist"
+}
+```
+
+### 2. POST /captains/login
+
+Authenticate an existing captain and return a JWT token.
+
+#### Request Body
+```json
+{
+  "email": "rahul@example.com",
+  "password": "123456"
+}
+```
+
+#### Validation Rules
+- `email` must be a valid email
+- `password` must be at least 6 characters
+
+#### Success Response
+```json
+{
+  "token": "<jwt_token>",
+  "Captain": {
+    "_id": "<captain_id>",
+    "email": "rahul@example.com"
+  }
+}
+```
+
+#### Error Response
+```json
+{
+  "message": "Invalid Email or Password"
+}
+```
+
+### 3. GET /captains/profile
+
+Fetch the logged-in captain profile.
+
+#### Authentication
+- Requires a valid JWT token in the `Authorization` header as `Bearer <token>`
+- Or a cookie named `token`
+
+#### Success Response
+```json
+{
+  "_id": "<captain_id>",
+  "fullname": {
+    "firstname": "Rahul",
+    "lastname": "Sharma"
+  },
+  "email": "rahul@example.com"
+}
+```
+
+#### Error Response
+```json
+{
+  "message": "Captain not authorized by token"
+}
+```
+
+### 4. GET /captains/logout
+
+Log out the captain and blacklist the current token.
+
+#### Authentication
+- Requires a valid JWT token in the `Authorization` header as `Bearer <token>`
+- Or a cookie named `token`
+
+#### Success Response
+```json
+{
+  "message": "Captain loged out"
+}
+```
+
+#### Error Response
+```json
+{
+  "message": "Token is expaired or blacklisted"
+}
+```
+
+### Captain Route Test Cases
+
+#### Register Captain
+- Successful registration with valid data
+- Fails when email is invalid
+- Fails when password is shorter than 6 characters
+- Fails when vehicle type is not one of `car`, `bike`, or `auto`
+- Fails when the email already exists
+
+#### Login Captain
+- Successful login with correct email and password
+- Fails with wrong password
+- Fails with non-existent email
+- Fails when validation rules are not met
+
+#### Get Profile
+- Returns profile successfully for a valid token
+- Fails when token is missing or invalid
+- Fails when token has been blacklisted
+
+#### Logout Captain
+- Logs out successfully with a valid token
+- Clears the auth cookie
+- Fails when token is missing or already blacklisted
+
+#### Example Test Commands
+```bash
+curl -X POST http://localhost:5000/captains/register \
+  -H "Content-Type: application/json" \
+  -d '{"fullname":{"firstname":"Rahul","lastname":"Sharma"},"email":"rahul@example.com","password":"123456","vehicle":{"vehicleType":"car","color":"Black","plate":"DL01AB1234","capacity":"4"}}'
+
+curl -X POST http://localhost:5000/captains/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"rahul@example.com","password":"123456"}'
+
+curl -X GET http://localhost:5000/captains/profile \
+  -H "Authorization: Bearer <token>"
+```
+
+---
+
 ## Building Blocks
 
 ### 1. Route Layer
